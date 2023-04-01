@@ -1,0 +1,21 @@
+from Pvlib_Class import *
+from Astral import *
+def main():
+    rotation,produced =loss(250, 0.)#second number is watts per rotation of device
+    sunrise,sunset,interval = astral_function(20)#amount of gear rotation in movable area not total gear amount meaning if the gear ration is 40 but only 20 are movable then input 20 loss(250, 4)
+    solar_position_no_interval=Solar_traacking_azimuth(sunrise, sunset)
+    TrackerOrientation = Solar_traacking(sunrise, sunset, interval)
+    azimuth_diffrence = diffrence(solar_position_no_interval, 20)
+    a ,b =  azimuth(azimuth_diffrence,sunrise,sunset)
+    c ,d,Elevation_interval =  elevation( rotation,sunrise,sunset)
+
+    print(b.head(40))
+    print(d.head(40))
+    TrackerOrientation.plot(subplots=True)
+    plt.show()
+    a.plot(subplots=True)
+    plt.show()
+    c.plot(subplots=True)
+    plt.show()
+    print(Elevation_interval)
+    return b,d
