@@ -1,1 +1,43 @@
+import pytz
+import numpy as np
+import pvlib
+from pvlib import location
+import pandas as pd
+import matplotlib.pyplot as plt 
+import math
+from math import isclose
+import astral
+from astral import *
+from astral import LocationInfo
+import datetime
+from datetime import date
+from astral.sun import sun
+from astral import LocationInfo
+def astral_function(turns): #limited to the amount of turns avaible in the movebal rate not total ratio of gear
+    a = date.today()
+    
+    year = int(a.strftime("%Y"))
+    month = int(a.strftime("%m"))
+    day1= int(a.strftime("%d"))
+    
+    loc = LocationInfo(name='SJC', region='CA, USA', timezone='America/Los_Angeles',
+                   latitude=33.3713439, longitude=-117.944675)
+    s = sun(loc.observer, date=datetime.date(year, month, day1), tzinfo=loc.timezone)
+    sunrise = s['sunrise']
+    sunset = s['sunset']
+    sunrise_time = int(sunrise.strftime(f'%H'))*60
+    a = sunrise_time
+    sunrise_time =int(sunrise.strftime(f'%M'))+a
+
+    sunset_time = int(sunset.strftime(f'%H'))*60
+    b = sunset_time
+    sunset_time =int(sunset.strftime(f'%M'))+b
+    minutes_sunset = sunset_time
+    sunrise = sunrise.strftime(f'%H:%M')
+    sunset = sunset.strftime(f'%H:%M')
+    diffrence = sunset_time - sunrise_time 
+    interval = diffrence / turns
+    interval = int(interval)
+    interval = str(interval) + 'T'
+    return sunrise,sunset,interval,diffrence, minutes_sunset
 
