@@ -1,0 +1,70 @@
+from Simplifier import *
+import pytz
+import numpy as np
+import pvlib
+from pvlib import location
+import pandas as pd
+import matplotlib.pyplot as plt 
+import math
+from math import isclose
+def averaging(a):
+    sum = 0
+    for i in range(0,10000000):
+        
+        sum = sum +i
+        diffrence = sum/(i+1)
+        true = math.isclose(diffrence, a, abs_tol = 0.3)
+        if true == True:
+            i = i-1
+            return i
+def Solar_traacking(sun_rise, sun_set,interval):
+        loc = location.Location(33, -117)
+        times = pd.date_range(sun_rise, sun_set, freq='1min', tz = 'America/Los_Angeles')
+        solar_position = loc.get_solarposition(times)
+        tracker_orientation = solar_position[['azimuth', 'elevation']].resample(interval).first().reindex(times, method='ffill')
+        return tracker_orientation
+def Solar_traacking_azimuth(sun_rise, sun_set,):
+        loc = location.Location(33, -117)
+        times = pd.date_range(sun_rise, sun_set, freq='1min', tz = 'America/Los_Angeles')
+        solar_position = loc.get_solarposition(times)
+        tracker_orientation = solar_position[['azimuth', 'elevation']].resample('1s').first().reindex(times, method='ffill')
+        return tracker_orientation
+def diffrence(tracker_orientation, ratio):
+        Max_return = tracker_orientation
+        Max_return = Max_return.max()
+        azimuth_max = Max_return['azimuth']
+        elevation_max = Max_return['elevation']
+        Min_return = tracker_orientation
+        Min_return = Min_return.min()
+        azimuth_min = Min_return['azimuth']
+        elevation_min = Min_return['elevation']
+        elevation_diffrence = elevation_max - elevation_min
+        azimuth_diffrence = azimuth_max - azimuth_min
+        elevation_diffrence = elevation_diffrence/ratio
+        azimuth_diffrence = azimuth_diffrence/ratio
+        return azimuth_diffrence
+def loss(watage_solar, StepperMotor_wattage,x_wattage,sun_rise,sun_set,diffrence,minutes):
+    previous_produced = -100000
+    rotation = 100000000
+    best_degrees = 0
+    for i in range(1,60):
+        new = i
+        new = new/1.41421356237    
+        new = averaging(new)
+        a, b, Elevation_interval, first, length = elevation(new,sun_rise,sun_set,minutes)
+        e, f, g,length2  = azimuth(new,sun_rise,sun_set,minutes)
+        effiency = math.cos(i*np.pi/180)
+        consumed2 = length2*x_wattage
+        
+        
+        produced = effiency * watage_solar*diffrence
+        produced = produced/60
+        consumed = length*StepperMotor_wattage
+        consumed = consumed + consumed2
+        net_produced = produced-consumed
+            
+        if net_produced > previous_produced:
+            previous_produced = net_produced
+            best_degrees = i
+    
+    return best_degrees, previous_produced
