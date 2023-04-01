@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov  6 12:49:33 2022
+
+@author: benjaminschwartz
+"""
+from Astral import *
+from Pvlib_Class import *
+from Simplifier import *
+#sun_rise,sun_set,asdf,fds, qwe =astral_function(3)
+from Getting_orientation import *
+azimuth, elevation, first_azimuth, First_elevation = getting_orientation()
+#azimuth, elevation = a(sun_rise,sun_set)
+elevation2 = elevation
+elevation2 = elevation
+elevation3 = elevation
+azimuth2 = azimuth
+def azimuth_time():
+    diffrence_list = []
+    azimuth_index = azimuth.index
+    
+    diffrence_list_minutes = []
+    a = azimuth_index.shape
+    a = a[0]
+    a = int(a)    
+    for i in range(0,a):
+        Hours = azimuth_index[i].strftime(f'%H')
+        Minutes = azimuth_index[i].strftime(f'%M')
+        Hours = int(Hours)
+        Minutes = int(Minutes)
+        Hours = Hours * 60 
+        total = Hours + Minutes
+        diffrence_list.append(total)
+    for i in range(0,a-1):    
+        c = diffrence_list[i]
+        d = diffrence_list[i+1]
+        diffrence = d -c
+        diffrence_list_minutes.append(diffrence)
+    return diffrence_list_minutes
+def elevation_time():
+    diffrence_list = []
+    elevation_index = elevation.index ### didn't want to change azimuth is elevation labeld wrong
+    
+    diffrence_list_minutes = []
+    a = elevation_index.shape
+    a = a[0]
+    a = int(a)    
+    for i in range(0,a):
+        Hours = elevation_index[i].strftime(f'%H')
+        Minutes = elevation_index[i].strftime(f'%M')
+        Hours = int(Hours)
+        Minutes = int(Minutes)
+        Hours = Hours * 60 
+        total = Hours + Minutes
+        diffrence_list.append(total)
+    for i in range(0,a-1):    
+        c = diffrence_list[i]
+        d = diffrence_list[i+1]
+        diffrence = d -c
+        diffrence_list_minutes.append(diffrence)
+    return diffrence_list_minutes
+def azimuth_diffrences():
+    tracker_orientation = azimuth2
+    diffrence_list = []
+   
+    for i in range(0,tracker_orientation.shape[0]-1):
+        value = tracker_orientation['azimuth'].values[i]
+        value2 = tracker_orientation['azimuth'].values[i+1]
+        diffrence = value2-value
+        diffrence_list.append(diffrence)
+    return diffrence_list
+def elevation_diffrence():
+    tracker_orientation = elevation2
+    diffrence_list = []
+    for i in range(0,tracker_orientation.shape[0]-1):
+        value = tracker_orientation['elevation'].values[i]
+        value2 = tracker_orientation['elevation'].values[i+1]
+        diffrence = value2-value
+        diffrence_list.append(diffrence)
+    return diffrence_list
+def adding():
+    something = []
+    addition = 0
+    tracker_orientation = elevation3
+    for i in range(0,tracker_orientation.shape[0]-1):
+        value = tracker_orientation['elevation'].values[i]
+        value = value * 1.41421356237
+        value = 90 - value
+        addition = addition + value
+        value = 0
+        something.append(value)
+    n = len(something)
+    angle = addition/n
+    print(angle)
+    return angle
+    
+
+            
+##def replacement():
+   # a = elevation_diffrence()
+    #diffrence = a
+    #a = a.shape
+    #a = a[0]
+    #time = elevation_time()
+    #add = 0
+    #print("starting reasignment")
+    #for i in range(0,a):
+     #   if time > 120:
+      ##      rember = diffrence[a]
+        #    new = maximmum-add-3
+         #   diffrence[a] = new
+          #  stuff = rember - new
+           # diffrence[a+1] = stuff
+        #    print(diffrence)
+         #   return diffrence
+        #add = add + a[i]
+        #time = elev_time[i]
+    ##
+            
