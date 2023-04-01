@@ -1,0 +1,65 @@
+from Astral import *
+from Pvlib_Class import *
+from Getting_orientation import *
+azimuth, elevation = getting_orientation()
+def azimuth_time():
+    diffrence_list = []
+    azimuth_index = azimuth.index
+    
+    diffrence_list_minutes = []
+    a = azimuth_index.shape
+    a = a[0]
+    a = int(a)    
+    for i in range(0,a):
+        Hours = azimuth_index[i].strftime(f'%H')
+        Minutes = azimuth_index[i].strftime(f'%M')
+        Hours = int(Hours)
+        Minutes = int(Minutes)
+        Hours = Hours * 60 
+        total = Hours + Minutes
+        diffrence_list.append(total)
+    for i in range(0,a-1):    
+        c = diffrence_list[i]
+        d = diffrence_list[i+1]
+        diffrence = d -c
+        diffrence_list_minutes.append(diffrence)
+    return diffrence_list_minutes
+def elevation():
+    diffrence_list = []
+    elevation_index = elevation.index
+        
+    diffrence_list_minutes = []
+    a = elevation_index.shape
+    a = a[0]
+    a = int(a)    
+    for i in range(0,a):
+        Hours = elevation_index[i].strftime(f'%H')
+        Minutes = elevation_index[i].strftime(f'%M')
+        Hours = int(Hours)
+        Minutes = int(Minutes)
+        Hours = Hours * 60 
+        total = Hours + Minutes
+        diffrence_list.append(total)
+    for i in range(0,a-1):    
+        c = diffrence_list[i]
+        d = diffrence_list[i+1]
+        diffrence = d -c
+        diffrence_list_minutes.append(diffrence)
+        
+    return diffrence_list_minutest
+def azimuth_diffrences(tracker_orientation):
+    diffrence_list = []
+    for i in range(0,tracker_orientation.shape[0]-1):
+        value = tracker_orientation['azimuth'].values[i]
+        value2 = tracker_orientation['azimuth'].values[i+1]
+        diffrence = value2-value
+        diffrence_list.append(diffrence)
+    return diffrence_list
+def elevation_diffrence(tracker_orientation):
+    diffrence_list = []
+    for i in range(0,tracker_orientation.shape[0]-1):
+        value = tracker_orientation['elevation'].values[i]
+        value2 = tracker_orientation['elevation'].values[i+1]
+        diffrence = value2-value
+        diffrence_list.append(diffrence)
+    return diffrence_list
