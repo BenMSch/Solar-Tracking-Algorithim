@@ -1,0 +1,111 @@
+import pytz
+import numpy as np
+import pvlib
+from pvlib import location
+import pandas as pd
+import matplotlib.pyplot as plt 
+import math
+from math import isclose
+def azimuth(Azimuth_interval, sun_rise,sun_set,minutes):
+        loc = location.Location(33, -117)
+        times = pd.date_range(sun_rise, sun_set, freq='1min', tz = 'America/Los_Angeles')
+        
+
+        solar_position = loc.get_solarposition(times)
+        tracker_orientation = solar_position[['azimuth']].resample('1S').first().reindex(times, method='ffill')
+        azimuth_orientation = tracker_orientation
+        min_azimuth = tracker_orientation.min()
+        off_7 = False
+        new_prev = -10000
+        previous = -10000
+        list1 = []
+        for i in range(tracker_orientation.shape[0]):
+            
+            value = tracker_orientation['azimuth'].values[i]
+            value1 = value % Azimuth_interval
+            close = math.isclose(value1, 0, abs_tol = Azimuth_interval)
+            previous_bool = math.isclose(previous, value, abs_tol = Azimuth_interval)
+            b = tracker_orientation
+            b = b.index
+            Hours = b[i].strftime(f'%H')
+            Minutes = b[i].strftime(f'%M')
+            Hours = int(Hours)
+            Minutes = int(Minutes)
+            Hours = Hours * 60 
+            total = Hours + Minutes
+            
+            diffrence = minutes-total
+            if close or off_7 == False:
+                if previous_bool == False:
+                    if diffrence > 45:
+                        
+                        previous = value
+                        new_prev = previous + Azimuth_interval
+                    
+                        list1.append(i)
+            off_7 = math.isclose(new_prev, value, abs_tol = Azimuth_interval )
+        a = pd.concat([tracker_orientation.iloc[list1]], axis=0)
+        a  = a.dropna()
+        b = a
+        a = a[['azimuth']].resample('1T').first().reindex(times, method='ffill')
+        a = a.fillna(method = 'ffill')
+        length = b.shape[0]
+        first = 2
+        return a, b, first, length
+def elevation( Elevation_interval, sun_rise,sun_set,minutes):
+
+        a = Elevation_interval
+        count = 0
+        loc = location.Location(33, -117)
+        times = pd.date_range(sun_rise, sun_set, freq='1min', tz = 'America/Los_Angeles')
+        solar_position = loc.get_solarposition(times)
+        tracker_orientation = solar_position[['elevation']].resample('1T').first().reindex(times, method='ffill')
+        off = a
+        off_7 = False
+        new_prev = -100000
+        previous = -10000
+        list1 = []
+
+        for i in range(tracker_orientation.shape[0]):
+            value = tracker_orientation['elevation'].values[i]
+            value1 = value % Elevation_interval
+            close = math.isclose(value1, 0, abs_tol = Elevation_interval)
+            previous_bool = math.isclose(previous, value, abs_tol = Elevation_interval)
+            b = tracker_orientation
+            b = b.index
+            Hours = b[i].strftime(f'%H')
+            Minutes = b[i].strftime(f'%M')
+            Hours = int(Hours)
+            Minutes = int(Minutes)
+            Hours = Hours * 60 
+            total = Hours + Minutes
+            
+            diffrence = minutes-total
+            if close or off_7 == False:
+                if previous_bool == False:
+                    if diffrence > 45:
+                        previous = value
+                        new_prev = previous + off - 0.5
+                    
+                        list1.append(i)
+            off_7 = math.isclose(new_prev, value, abs_tol = Elevation_interval )
+            
+        a = pd.concat([tracker_orientation.iloc[list1]], axis=0)
+        a  = a.dropna()
+        b = a
+        a = a[['elevation']].resample('1T').first().reindex(times, method='ffill')
+        a = a.fillna(method = 'ffill')
+        length = b.shape[0]
+        first = 2
+        return a, b, Elevation_interval, first, length
+
+def a(sun_rise,sun_set):    
+
+    loc = location.Location(33, -117)
+    times = pd.date_range(sun_rise, sun_set, freq='1min', tz = 'America/Los_Angeles')
+    solar_position = loc.get_solarposition(times)
+    tracker_orientation = solar_position[[ 'azimuth']].resample('15T').ffill()
+    tracker_orientation2 = solar_position[['elevation']].resample('15T').ffill()
+    print(tracker_orientation.head(40))
+    print(tracker_orientation2.head(40))
+    return tracker_orientation, tracker_orientation2
